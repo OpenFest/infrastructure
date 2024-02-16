@@ -1,0 +1,52 @@
+---
+
+- name: Check parameters
+  ansible.builtin.assert:
+    that:
+      - keycloak_podman_user_name is defined
+      - keycloak_db_password is defined
+
+- name: Create PostgreSQL database
+  include_tasks: create_postgres_db.yml
+  vars:
+    postgres_username: keycloak
+    postgres_database: keycloak
+    postgres_password: "{{ keycloak_db_password }}" #TODO: change for a password manager
+
+- name: Set up container user
+  include_role:
+    name: container-user
+  vars:
+    podman_user: "{{ keycloak_podman_user_name }}"
+    podman_home: "{{ keycloak_podman_user_home | default(omit) }}"
+    podman_uid: "{{ keycloak_podman_user_uid | default(omit) }}"
+
+      #- name: Create secrets
+      #  containers.podman.podman_secret:
+      #  become: true
+      #  become_user: "{{ keycloak_podman_user_name }}"
+
+- name: Create data directories
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+  with_items:
+    - "{{ keycloak_data_dir }}/keystore/"
+
+- name: Upload unit files
+  ansible.builtin.template:
+    src: units/sso-keycloak.container.j2
+    dest: ~/.config/containers/systemd/sso-keycloak.container
+  become: true
+  become_user: "{{ keycloak_podman_user_name }}"
+
+
+# Note: enabled in the unit file
+- name: Start Keycloak
+  ansible.builtin.systemd_service:
+    scope: user
+    service: sso-keycloak.service
+    daemon_reload: true
+    state: started
+  become: true
+  become_user: "{{ keycloak_podman_user_name }}"

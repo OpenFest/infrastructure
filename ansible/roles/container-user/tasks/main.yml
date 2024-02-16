@@ -3,22 +3,33 @@
 - name: Check if required parameters are set
   ansible.builtin.assert:
     that:
-      - username is defined
+      - podman_user_name is defined
+
+- name: Set up as container host
+  ansible.builtin.include_role:
+    name: container-host
 
 - name: Create user
   ansible.builtin.user:
-    name: "{{ username }}"
-    home: "{{ homedir | default(omit) }}"
-    uid: "{{ uid | default(omit) }}"
+    name: "{{ podman_user_name }}"
+    home: "{{ podman_user_home | default(omit) }}"
+    uid: "{{ podman_user_uid | default(omit) }}"
     state: present
+
+- name: Create unit files dir
+  ansible.builtin.file:
+    path: ~/.config/containers/systemd
+    state: directory
+  become: true
+  become_user: "{{ podman_user_name }}"
 
 # Note: We check whether lingering is already enabled so we show as OK/skipped instead of changed
 - name: Check if user is lingering
-  stat:
-    path: "/var/lib/systemd/linger/{{ username }}"
+  ansible.builtin.stat:
+    path: "/var/lib/systemd/linger/{{ podman_user_name }}"
   register: user_lingering
 
 - name: Enable session lingering
-  ansible.builtin.command: "loginctl enable-linger {{ username }}"
+  ansible.builtin.command: "loginctl enable-linger {{ podman_user_name }}"
   when:
     - not user_lingering.stat.exists

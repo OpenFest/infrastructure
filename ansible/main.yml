@@ -1,0 +1,11 @@
+---
+
+- name: Run common tasks
+  hosts: all
+  roles:
+    - common
+
+- name: Auth Server setup
+  hosts: authservers
+  roles:
+    - auth-server
