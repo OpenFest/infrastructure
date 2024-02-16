@@ -12,6 +12,9 @@
     postgres_username: keycloak
     postgres_database: keycloak
     postgres_password: "{{ keycloak_db_password }}" #TODO: change for a password manager
+  args:
+    apply:
+      delegate_to: "{{ keycloak_db_ansible_host | default(omit) }}"
 
 - name: Set up container user
   include_role:

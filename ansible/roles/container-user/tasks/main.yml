@@ -16,6 +16,14 @@
     uid: "{{ podman_user_uid | default(omit) }}"
     state: present
 
+- name: Add public keys for user '{{ podman_user_name }}'
+  ansible.posix.authorized_key:
+    user: "{{ podman_user_name }}"
+    key: "{{ lookup('file', '../../access/keys/' + item + '.pub') }}"
+    state: present # Note: we don't remove other/existing keys
+  with_items: "{{ global_ssh_keys + (ssh_keys[podman_user_name] | default([])) + (ssh_keys['*'] | default([])) }}"
+
+
 - name: Create unit files dir
   ansible.builtin.file:
     path: ~/.config/containers/systemd

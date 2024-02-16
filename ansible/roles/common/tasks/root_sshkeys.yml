@@ -1,8 +1,8 @@
 ---
 
-- name: add ssh keys to root
+- name: Add public keys for root
   ansible.posix.authorized_key:
     user: root
     key: "{{ lookup('file', '../../access/keys/' + item + '.pub') }}"
     state: present # Note: we don't remove other/existing keys
-  with_items: "{{ ssh_root_keys }}"
+  with_items: "{{ global_ssh_keys + (ssh_keys['root'] | default([])) }}"
