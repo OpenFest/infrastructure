@@ -1,0 +1,6 @@
+---
+
+- name: Install podman (w/ quadlet support)
+  ansible.builtin.package:
+    name: podman>=4.4.0 # version 4.4.0 includes the systemd generator
+    state: present

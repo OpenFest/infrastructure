@@ -1,0 +1,30 @@
+---
+
+- name: Install PostgreSQL and psycopg2
+  ansible.builtin.package:
+    name: "{{ install_packages[ansible_os_family] }}"
+    state: present
+  vars:
+    install_packages:
+      Debian:
+        - postgresql
+        - python3-psycopg2
+      RedHat:
+        - postgresql
+        - python3-psycopg2
+      Suse:
+        - postgresql
+        - python311-psycopg2
+
+- name: Enable and start the PostgreSQL server
+  ansible.builtin.service:
+    name: postgresql.service
+    enabled: true
+    state: started
+
+- name: Create a PostgreSQL user for root
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: root
+    role_attr_flags: SUPERUSER

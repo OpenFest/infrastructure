@@ -1,0 +1,24 @@
+---
+
+- name: Check if required parameters are set
+  ansible.builtin.assert:
+    that:
+      - username is defined
+
+- name: Create user
+  ansible.builtin.user:
+    name: "{{ username }}"
+    home: "{{ homedir | default(omit) }}"
+    uid: "{{ uid | default(omit) }}"
+    state: present
+
+# Note: We check whether lingering is already enabled so we show as OK/skipped instead of changed
+- name: Check if user is lingering
+  stat:
+    path: "/var/lib/systemd/linger/{{ username }}"
+  register: user_lingering
+
+- name: Enable session lingering
+  ansible.builtin.command: "loginctl enable-linger {{ username }}"
+  when:
+    - not user_lingering.stat.exists

@@ -1,0 +1,20 @@
+---
+
+- name: Install OpenLDAP server
+  ansible.builtin.package:
+    name: "{{ install_packages[ansible_os_family] }}"
+    state: present
+  vars:
+    install_packages:
+      Debian:
+        - slapd
+      RedHat:
+        - openldap
+      Suse:
+        - openldap2
+
+- name: Enable and start the OpenLDAP server
+  ansible.builtin.service:
+    name: slapd.service
+    enabled: true
+    state: started
