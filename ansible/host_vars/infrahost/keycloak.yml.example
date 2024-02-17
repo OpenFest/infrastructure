@@ -1,0 +1,23 @@
+keycloak_config:
+  hostname: auth.openfest.org
+  db:
+    host: host.containers.internal
+    user: keycloak
+    database: keycloak
+    password: slojnaparola
+    access_host: all
+    ansible_host: infrahost
+  podman:
+    user: auth
+    home: /home/auth
+  datadir: /home/auth/keycloak
+  listen_address: 127.0.0.1:9091
+  reverse_proxy:
+    external_url: auth.openfest.org
+    proxy_url: 127.0.0.1:9091
+    ansible_host: infrahost
+    tls:
+      type: internal
+  admin:
+    user: admin
+    password: slojnaparola

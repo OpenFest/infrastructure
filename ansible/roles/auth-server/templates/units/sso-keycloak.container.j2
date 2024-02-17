@@ -6,7 +6,7 @@ ContainerName=sso-keycloak
 Image=quay.io/keycloak/keycloak:latest
 
 Environment=JAVA_OPTS="-Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.err.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -XX:+ExitOnOutOfMemoryError -Djava.security.egd=file:/dev/urandom -XX:+UseG1GC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=80 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -XX:FlightRecorderOptions=stackdepth=512"
-Volume={{ keycloak_data_dir }}/keystore/:/keystore/
+Volume={{ keycloak.datadir }}/keystore/:/keystore/
 
 Secret=keycloak-admin-user,type=env,target=KEYCLOAK_ADMIN
 Secret=keycloak-admin-password,type=env,target=KEYCLOAK_ADMIN_PASSWORD
@@ -18,9 +18,9 @@ Secret=keycloak-db-password,type=env,target=KC_DB_PASSWORD
 Environment=KC_DB=postgres
 Environment=KC_HEALTH_ENABLED=true
 
-Exec=start --features=preview --hostname {{ keycloak_hostname }} --proxy edge
+Exec=start --features=preview --hostname {{ keycloak.hostname }} --proxy edge
 
-PublishPort={{ keycloak_listen_address }}:8080
+PublishPort={{ keycloak.listen_address }}:8080
 AutoUpdate=registry
 [Install]
 WantedBy=default.target

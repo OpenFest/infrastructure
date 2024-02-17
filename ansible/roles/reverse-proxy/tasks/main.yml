@@ -1,0 +1,25 @@
+---
+
+- name: Install Caddy
+  ansible.builtin.package:
+    name: caddy
+    state: present
+
+- name: Update Caddyfile
+  ansible.builtin.copy:
+    src: Caddyfile
+    dest: /etc/caddy/Caddyfile
+
+- name: Create site config directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /etc/caddy/sites-available
+    - /etc/caddy/sites-enabled
+
+- name: Enable and start the Caddy server
+  ansible.builtin.service:
+    name: caddy.service
+    enabled: true
+    state: started

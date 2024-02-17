@@ -1,0 +1,17 @@
+{{ external_url }} {
+
+	{% if tls is defined and tls.type != 'auto' %}
+		{% if tls.type == 'internal' %}
+			tls internal
+		{% elif tls.type == 'cloudflare' %}
+			tls {
+				dns cloudflare {{ tls.cloudflare_token }}
+			}
+		{% elif tls.type == 'file' %}
+			tls {{ tls.cert }} {{ tls.key }}
+		{% endif %}
+	{% endif %}
+
+        reverse_proxy {{ proxy_url }}
+        import vhost-access-log {{ app_name }}
+}

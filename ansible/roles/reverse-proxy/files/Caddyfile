@@ -1,0 +1,12 @@
+(vhost-access-log) {
+        log {
+                output file /var/log/caddy/{args[0]}-access.log
+        }
+}
+
+# Note: Requires a new caddy version
+#{
+#        persist_config off
+#}
+
+import /etc/caddy/sites-enabled/*.caddy

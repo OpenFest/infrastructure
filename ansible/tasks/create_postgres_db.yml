@@ -3,9 +3,9 @@
 - name: Check params
   ansible.builtin.assert:
     that:
-      - postgres_username is defined
-      - postgres_database is defined
-      - not(postgres_access_host is defined and postgres_password is defined)
+      - user is defined
+      - database is defined
+      - not(access_host is defined and password is not defined)
 
 - name: Set up PostgreSQL
   ansible.builtin.include_role:
@@ -13,25 +13,32 @@
 
 - name: Create user
   community.postgresql.postgresql_user:
-    name: "{{ postgres_username }}"
-    password: "{{ postgres_password | default(omit) }}"
+    name: "{{ user }}"
+    password: "{{ password | default(omit) }}"
   become: true
   become_user: postgres
 
-- name: Create postgres_database
+- name: Create database
   community.postgresql.postgresql_db:
-    name: "{{ postgres_database }}"
-    owner: "{{ postgres_username }}"
+    name: "{{ database }}"
+    owner: "{{ user }}"
   become: true
   become_user: postgres
-    
 
-- name: Update pg_hba scram
+- name: Get pg_hba.conf location
+  community.postgresql.postgresql_query:
+    query: SHOW hba_file
+  become: true
+  become_user: postgres
+  register: postgres_hba_file_query
+
+- name: Update pg_hba scram authentication
   community.postgresql.postgresql_pg_hba:
     contype: host
-    users: "{{ postgres_username }}"
-    source: "{{ postgres_access_host }}"
-    databases: "{{ postgres_database }}"
+    users: "{{ user }}"
+    source: "{{ access_host }}"
+    databases: "{{ database }}"
     method: "scram-sha-256"
-  when: postgres_access_host is defined
+    dest: "{{ postgres_hba_file_query.query_result[0].hba_file }}"
+  when: access_host is defined
   notify: Restart PostgreSQL

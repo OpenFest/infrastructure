@@ -3,7 +3,7 @@
 - name: Check if required parameters are set
   ansible.builtin.assert:
     that:
-      - podman_user_name is defined
+      - user is defined
 
 - name: Set up as container host
   ansible.builtin.include_role:
@@ -11,17 +11,17 @@
 
 - name: Create user
   ansible.builtin.user:
-    name: "{{ podman_user_name }}"
-    home: "{{ podman_user_home | default(omit) }}"
-    uid: "{{ podman_user_uid | default(omit) }}"
+    name: "{{ user }}"
+    home: "{{ home | default(omit) }}"
+    uid: "{{ uid | default(omit) }}"
     state: present
 
 - name: Add public keys for user '{{ podman_user_name }}'
   ansible.posix.authorized_key:
-    user: "{{ podman_user_name }}"
+    user: "{{ user }}"
     key: "{{ lookup('file', '../../access/keys/' + item + '.pub') }}"
     state: present # Note: we don't remove other/existing keys
-  with_items: "{{ global_ssh_keys + (ssh_keys[podman_user_name] | default([])) + (ssh_keys['*'] | default([])) }}"
+  with_items: "{{ global_ssh_keys + (ssh_keys[user] | default([])) + (ssh_keys['*'] | default([])) }}"
 
 
 - name: Create unit files dir
@@ -29,15 +29,15 @@
     path: ~/.config/containers/systemd
     state: directory
   become: true
-  become_user: "{{ podman_user_name }}"
+  become_user: "{{ user }}"
 
 # Note: We check whether lingering is already enabled so we show as OK/skipped instead of changed
 - name: Check if user is lingering
   ansible.builtin.stat:
-    path: "/var/lib/systemd/linger/{{ podman_user_name }}"
+    path: "/var/lib/systemd/linger/{{ user }}"
   register: user_lingering
 
 - name: Enable session lingering
-  ansible.builtin.command: "loginctl enable-linger {{ podman_user_name }}"
+  ansible.builtin.command: "loginctl enable-linger {{ user }}"
   when:
     - not user_lingering.stat.exists

@@ -3,46 +3,62 @@
 - name: Check parameters
   ansible.builtin.assert:
     that:
-      - keycloak_podman_user_name is defined
-      - keycloak_db_password is defined
+      - keycloak.podman.user is defined
+      - keycloak.db.password is defined
 
 - name: Create PostgreSQL database
-  include_tasks: create_postgres_db.yml
+  ansible.builtin.include_tasks: create_postgres_db.yml
   vars:
-    postgres_username: keycloak
-    postgres_database: keycloak
-    postgres_password: "{{ keycloak_db_password }}" #TODO: change for a password manager
+    user: "{{ keycloak.db.user }}"
+    database: "{{ keycloak.db.database }}"
+    password: "{{ keycloak.db.password }}"
+    access_host: "{{ keycloak.db.access_host | default(omit) }}"
   args:
     apply:
-      delegate_to: "{{ keycloak_db_ansible_host | default(omit) }}"
+      delegate_to: "{{ keycloak.db.ansible_host | default(omit) }}"
 
 - name: Set up container user
-  include_role:
+  ansible.builtin.include_role:
     name: container-user
   vars:
-    podman_user: "{{ keycloak_podman_user_name }}"
-    podman_home: "{{ keycloak_podman_user_home | default(omit) }}"
-    podman_uid: "{{ keycloak_podman_user_uid | default(omit) }}"
-
-      #- name: Create secrets
-      #  containers.podman.podman_secret:
-      #  become: true
-      #  become_user: "{{ keycloak_podman_user_name }}"
+    user: "{{ keycloak.podman.user }}"
+    home: "{{ keycloak.podman.home | default(omit) }}"
+    uid: "{{ keycloak.podman.uid | default(omit) }}"
 
 - name: Create data directories
   ansible.builtin.file:
     state: directory
     path: "{{ item }}"
   with_items:
-    - "{{ keycloak_data_dir }}/keystore/"
+    - "{{ keycloak.datadir }}/keystore/"
 
 - name: Upload unit files
   ansible.builtin.template:
     src: units/sso-keycloak.container.j2
     dest: ~/.config/containers/systemd/sso-keycloak.container
   become: true
-  become_user: "{{ keycloak_podman_user_name }}"
+  become_user: "{{ keycloak.podman.user }}"
 
+- name: Set up podman secrets
+  containers.podman.podman_secret:
+    name: "{{ item.key }}"
+    data: "{{ item.value }}"
+    state: present
+    skip_existing: false
+    force: true
+  vars:
+    secrets:
+      keycloak-admin-user: "{{ keycloak.admin.user }}"
+      keycloak-admin-password: "{{ keycloak.admin.password }}"
+      keycloak-db-host: "{{ keycloak.db.host }}"
+      keycloak-db-name: "{{ keycloak.db.database }}"
+      keycloak-db-user: "{{ keycloak.db.user }}"
+      keycloak-db-password: "{{ keycloak.db.password }}"
+  with_dict: "{{ secrets }}"
+  no_log: true # Secret values
+
+  become: true
+  become_user: "{{ keycloak.podman.user }}"
 
 # Note: enabled in the unit file
 - name: Start Keycloak
@@ -52,4 +68,15 @@
     daemon_reload: true
     state: started
   become: true
-  become_user: "{{ keycloak_podman_user_name }}"
+  become_user: "{{ keycloak.podman.user }}"
+
+- name: Set up reverse proxy
+  ansible.builtin.include_tasks: create_vhost.yml
+  vars:
+    external_url: "{{ keycloak.reverse_proxy.external_url }}"
+    proxy_url: "{{ keycloak.reverse_proxy.proxy_url }}"
+    app_name: "{{ keycloak.reverse_proxy.app_name | default('keycloak') }}"
+    tls: "{{ keycloak.reverse_proxy.tls | default(omit) }}"
+  args:
+    apply:
+      delegate_to: "{{ keycloak.reverse_proxy.ansible_host | default(omit) }}"

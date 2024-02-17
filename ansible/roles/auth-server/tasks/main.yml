@@ -6,6 +6,4 @@
 - name: Set up Keycloak
   include_tasks: keycloak.yml
   vars:
-    podman_user_name: "{{ keycloak_podman_user_name }}"
-    podman_user_home: "{{ keycloak_podman_user_home | default(omit) }}"
-    podman_user_uid: "{{ keycloak_podman_user_uid | default(omit) }}"
+    keycloak: "{{ keycloak_config }}"
