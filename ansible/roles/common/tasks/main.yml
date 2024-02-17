@@ -1,7 +1,7 @@
 ---
 
 - name: Add ssh keys for root
-  include_tasks: root_sshkeys.yml
+  ansible.builtin.include_tasks: root_sshkeys.yml
 
 - name: Install sudo as it's needed for 'become'
   ansible.builtin.package:
