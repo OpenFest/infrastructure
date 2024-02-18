@@ -7,3 +7,7 @@
   ansible.builtin.package:
     name: sudo
     state: present
+
+- name: Setup firewall
+  ansible.builtin.include_tasks: firewall.yml
+  when: firewall is defined

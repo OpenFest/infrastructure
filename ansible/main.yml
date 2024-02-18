@@ -8,4 +8,5 @@
 - name: Auth Server setup
   hosts: authservers
   roles:
+    - common
     - auth-server

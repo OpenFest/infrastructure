@@ -13,5 +13,5 @@
 	{% endif %}
 
         reverse_proxy {{ proxy_url }}
-        import vhost-access-log {{ app_name }}
+        import vhost-access-log {{ app_name | default('default') }}
 }

@@ -17,9 +17,26 @@
   with_items:
     - /etc/caddy/sites-available
     - /etc/caddy/sites-enabled
+    - /var/log/caddy
+
+- name: Configure logging dir
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: caddy
+    group: caddy
+  with_items:
+    - /var/log/caddy
 
 - name: Enable and start the Caddy server
   ansible.builtin.service:
     name: caddy.service
     enabled: true
     state: started
+
+- name: Configure nftables
+  ansible.builtin.copy:
+    dest: /etc/nftables/input.d/caddy.nft
+    src: caddy.nft
+  when: firewall is defined
+  notify: Restart nftables

@@ -1,6 +1,6 @@
 (vhost-access-log) {
         log {
-                output file /var/log/caddy/{args[0]}-access.log
+                output file /var/log/caddy/{args.0}-access.log
         }
 }
 

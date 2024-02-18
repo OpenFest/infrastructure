@@ -1,0 +1,5 @@
+# HTTP / HTTPS
+tcp dport { http, https } accept
+
+# QUIC
+udp dport https accept

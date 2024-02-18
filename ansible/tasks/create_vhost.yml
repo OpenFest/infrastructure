@@ -3,9 +3,6 @@
 - name: Check params
   ansible.builtin.assert:
     that:
-      - app_name is defined
-      - external_url is defined
-      - proxy_url is defined
       - not(tls.type == "cloudflare" and tls.cloudflare_token is undefined)
       - not(tls.type == "file" and (tls.cert is undefined or tls.key is undefined))
       - tls.type is not defined or (tls.type in ['auto', 'internal', 'cloudflare', 'file'] )
@@ -16,7 +13,7 @@
 
 - name: Template vhost file
   ansible.builtin.template:
-    src: vhost.caddy.j2
+    src: "{{ template_file | default('vhost.caddy.j2') }}"
     dest: "/etc/caddy/sites-available/{{ app_name }}.caddy"
 
 - name: Symlink vhost

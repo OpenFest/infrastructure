@@ -16,7 +16,7 @@
     uid: "{{ uid | default(omit) }}"
     state: present
 
-- name: Add public keys for user '{{ podman_user_name }}'
+- name: Add public keys for user '{{ user }}'
   ansible.posix.authorized_key:
     user: "{{ user }}"
     key: "{{ lookup('file', '../../access/keys/' + item + '.pub') }}"
