@@ -14,12 +14,14 @@
     src: nftables.service
     dest: /etc/systemd/system/nftables.service
     state: present
+    mode: "644"
   when: ansible_facts.services['nftables.service'] is not defined
 
 - name: Add config file
   ansible.builtin.template:
     src: nftables.conf.j2
     dest: "{{ nftables_main_file[ansible_os_family] | default('/etc/nftables.conf') }}"
+    mode: "644"
   vars:
     nftables_main_file:
       Debian: /etc/nftables.conf
@@ -29,6 +31,7 @@
   ansible.builtin.file:
     name: "{{ item }}"
     state: directory
+    mode: "755"
   with_items:
     - /etc/nftables/input.d
     - /etc/nftables/forward.d

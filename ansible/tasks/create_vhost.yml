@@ -8,13 +8,14 @@
       - tls.type is not defined or (tls.type in ['auto', 'internal', 'cloudflare', 'file'] )
 
 - name: Set up Caddy
-  ansible.builtin.include_role: 
+  ansible.builtin.include_role:
     name: reverse-proxy
 
 - name: Template vhost file
   ansible.builtin.template:
     src: "{{ template_file | default('vhost.caddy.j2') }}"
     dest: "/etc/caddy/sites-available/{{ app_name }}.caddy"
+    mode: "644"
 
 - name: Symlink vhost
   ansible.builtin.file:

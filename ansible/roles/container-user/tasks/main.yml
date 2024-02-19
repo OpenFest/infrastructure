@@ -20,7 +20,7 @@
   ansible.posix.authorized_key:
     user: "{{ user }}"
     key: "{{ lookup('file', '../../access/keys/' + item + '.pub') }}"
-    state: present # Note: we don't remove other/existing keys
+    state: present  # Note: we don't remove other/existing keys
   with_items: "{{ global_ssh_keys + (ssh_keys[user] | default([])) + (ssh_keys['*'] | default([])) }}"
 
 
@@ -28,10 +28,12 @@
   ansible.builtin.file:
     path: ~/.config/containers/systemd
     state: directory
+    mode: "755"
   become: true
   become_user: "{{ user }}"
 
-# Note: We check whether lingering is already enabled so we show as OK/skipped instead of changed
+# Note: We check whether lingering is already enabled
+# so we don't execute the command if not needed
 - name: Check if user is lingering
   ansible.builtin.stat:
     path: "/var/lib/systemd/linger/{{ user }}"
@@ -41,3 +43,4 @@
   ansible.builtin.command: "loginctl enable-linger {{ user }}"
   when:
     - not user_lingering.stat.exists
+  changed_when: not user_lingering.stat.exists

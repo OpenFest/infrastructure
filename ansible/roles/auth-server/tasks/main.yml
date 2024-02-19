@@ -1,9 +1,9 @@
 ---
 
 - name: Set up OpenLDAP
-  include_tasks: ldap.yml
+  ansible.builtin.include_tasks: ldap.yml
 
 - name: Set up Keycloak
-  include_tasks: keycloak.yml
+  ansible.builtin.include_tasks: keycloak.yml
   vars:
     keycloak: "{{ keycloak_config }}"

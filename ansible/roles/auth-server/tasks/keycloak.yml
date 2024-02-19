@@ -7,7 +7,7 @@
       - keycloak.db.password is defined
 
 - name: Create PostgreSQL database
-  ansible.builtin.include_tasks: create_postgres_db.yml
+  ansible.builtin.include_tasks: tasks/create_postgres_db.yml
   vars:
     user: "{{ keycloak.db.user }}"
     database: "{{ keycloak.db.database }}"
@@ -29,6 +29,7 @@
   ansible.builtin.file:
     state: directory
     path: "{{ item }}"
+    mode: "755"
   with_items:
     - "{{ keycloak.datadir }}/keystore/"
 
@@ -36,6 +37,7 @@
   ansible.builtin.template:
     src: units/sso-keycloak.container.j2
     dest: ~/.config/containers/systemd/sso-keycloak.container
+    mode: "644"
   become: true
   become_user: "{{ keycloak.podman.user }}"
 
@@ -55,7 +57,7 @@
       keycloak-db-user: "{{ keycloak.db.user }}"
       keycloak-db-password: "{{ keycloak.db.password }}"
   with_dict: "{{ secrets }}"
-  no_log: true # Secret values
+  no_log: true
 
   become: true
   become_user: "{{ keycloak.podman.user }}"
@@ -71,7 +73,7 @@
   become_user: "{{ keycloak.podman.user }}"
 
 - name: Set up reverse proxy
-  ansible.builtin.include_tasks: create_vhost.yml
+  ansible.builtin.include_tasks: tasks/create_vhost.yml
   vars:
     external_url: "{{ keycloak.reverse_proxy.external_url }}"
     proxy_url: "{{ keycloak.reverse_proxy.proxy_url }}"
