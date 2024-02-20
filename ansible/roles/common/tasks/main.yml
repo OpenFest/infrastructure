@@ -11,3 +11,13 @@
 - name: Setup firewall
   ansible.builtin.include_tasks: firewall.yml
   when: firewall is defined
+
+- name: Provision users
+  ansible.builtin.include_role:
+    name: user
+  vars:
+    user: "{{ user_item.key }}"  # noqa:var-naming[no-role-prefix]
+  loop_control:
+    loop_var: user_item
+  with_items:
+    - "{{ users | dict2items }}"

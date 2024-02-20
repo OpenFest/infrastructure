@@ -3,7 +3,7 @@
 - name: Check parameters
   ansible.builtin.assert:
     that:
-      - keycloak.podman.user is defined
+      - keycloak.podman_user is defined
       - keycloak.db.password is defined
 
 - name: Create PostgreSQL database
@@ -21,9 +21,7 @@
   ansible.builtin.include_role:
     name: container-user
   vars:
-    user: "{{ keycloak.podman.user }}"
-    home: "{{ keycloak.podman.home | default(omit) }}"
-    uid: "{{ keycloak.podman.uid | default(omit) }}"
+    user: "{{ keycloak.podman_user }}"
 
 - name: Create data directories
   ansible.builtin.file:
@@ -39,7 +37,7 @@
     dest: ~/.config/containers/systemd/sso-keycloak.container
     mode: "644"
   become: true
-  become_user: "{{ keycloak.podman.user }}"
+  become_user: "{{ keycloak.podman_user }}"
 
 - name: Set up podman secrets
   containers.podman.podman_secret:
@@ -60,7 +58,7 @@
   no_log: true
 
   become: true
-  become_user: "{{ keycloak.podman.user }}"
+  become_user: "{{ keycloak.podman_user }}"
 
 # Note: enabled in the unit file
 - name: Start Keycloak
@@ -70,7 +68,7 @@
     daemon_reload: true
     state: started
   become: true
-  become_user: "{{ keycloak.podman.user }}"
+  become_user: "{{ keycloak.podman_user }}"
 
 - name: Set up reverse proxy
   ansible.builtin.include_tasks: tasks/create_vhost.yml

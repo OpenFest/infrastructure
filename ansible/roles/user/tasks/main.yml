@@ -1,0 +1,23 @@
+---
+
+- name: Check if required parameters are set
+  ansible.builtin.assert:
+    that:
+      - user is defined
+
+- name: Create user
+  ansible.builtin.user:
+    name: "{{ user }}"
+    home: "{{ users[user].home | default(omit) }}"
+    uid: "{{ users[user].uid | default(omit) }}"
+    state: present
+
+- name: Add public keys for user '{{ user }}'
+  ansible.posix.authorized_key:
+    user: "{{ user }}"
+    key: "{{ lookup('file', '../../access/keys/' + item + '.pub') }}"
+    state: present  # Note: we don't remove other/existing keys
+  with_items: >-
+    {{ global_ssh_keys +
+        (ssh_keys[user] | default([])) +
+        (ssh_keys['*'] | default([])) }}
