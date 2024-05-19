@@ -1,0 +1,23 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/widgets
+
+- resources:
+      cpu: true
+      memory: true
+      disk: /
+      cputemp: true
+      uptime: true
+      units: imperial # only used by cpu temp
+      refresh: 3000 # optional, in ms
+- search:
+      provider: google 
+      focus: true # Optional, will set focus to the search bar on page load
+      target: _blank # One of _self, _blank, _parent or _top
+- datetime:
+    text_size: 2xl # 4xl, 3xl, 2xl, xl, md, sm, xs.
+    format:
+      dateStyle: long
+      timeStyle: short
+      hour12: false
+

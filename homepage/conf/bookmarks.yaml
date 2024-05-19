@@ -1,0 +1,56 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/bookmarks
+
+- Bookmarks:
+    - OpenFest Element:
+        - icon: element.png
+          href: https://chat.openfest.org/#/welcome
+    - OpenFest SSO:
+        - icon: keycloak
+          href: http://auth.openfest.org
+    - Mail:
+        - icon: roundcube.png
+          href: http://mail.openfest.org/
+    - Website:
+        - icon: https://www.openfest.org/2024/img/favicon.ico
+          href: https://www.openfest.org/2024/bg/
+    - OpenFest Polls:
+        - icon: mdi-poll
+          href: http://polls.openfest.org
+    - Event localtion - John Atanasoff Forum, Sofia Tech Park:
+        - icon: google-maps.png
+          href: https://www.google.com/maps/place/John+Atanasoff+Forum,+Sofia+Tech+Park/@42.6664348,23.3726003,17z/data=!3m1!4b1!4m6!3m5!1s0x40aa8679286c7ed7:0x4a9d96383bfc10e5!8m2!3d42.6664309!4d23.3751752!16s%2Fg%2F11f_0t2tg9?entry=tts
+- Development:
+    - Github OpenFest (archive):
+        - icon: https://github.com/fluidicon.png
+          href: https://github.com/OpenFest/openfest
+    - Gitea OpenFest:
+        - icon: gitea.png
+          href: http://git.openfest.org
+    - Cloud:
+        - icon: nextcloud.png
+          href: http://nc.openfest.org/
+    - WikiJS:
+        - icon: wikijs
+          href: https://wiki.cloudk9.eu
+
+- Social:
+    - OpenFest Linkedin:
+        - icon: linkedin.png
+          href: https://www.linkedin.com/company/openfest-bulgaria/
+    - OpenFest Facebook:
+        - icon: facebook.png
+          href: https://www.facebook.com/OpenFestBulgaria/
+    - OpenFest Bulgaria Youtube:
+        - icon: youtube.png
+          href: https://www.youtube.com/@openfestbulgaria
+    - OpenFest X ( Twitter ):
+        - icon: twitter.png
+          href: https://twitter.com/openfestbg
+    - OpenFest Instagram:
+        - icon: instagram.png
+          href: https://www.instagram.com/openfestbulgaria
+    - OpenFest Mastodon:
+        - icon: mastodon.png
+          href: https://mastodon.social/@openfest

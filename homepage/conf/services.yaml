@@ -1,0 +1,13 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/services
+
+
+# Just an example of a service that can be added to the homepage
+- Monitoring:
+    - Speed test:
+        icon: speedtest-tracker.png
+        href: http://192.168.1.3:9004
+        widget:
+            type: speedtest
+            url: http://192.168.1.3:9004
